@@ -1,0 +1,5 @@
+{
+    "require": {
+        "kenjis/codeigniter-ss-twig": "^0.2.1"
+    }
+}
