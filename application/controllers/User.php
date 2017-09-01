@@ -4,9 +4,11 @@ class User extends CI_controller
 {
 
     private $params_authorization = [
+
         'client_id'     => 6161889,
         'redirect_uri'  => 'http://project-vk.ru/User/authorization',
         'display'       => 'popup',
+        'scope'         => 'friends',
         'response_type' => 'code',
         'v'             => 5.68
     ];
@@ -16,7 +18,6 @@ class User extends CI_controller
 
         $this->twig->display('welcome',[
             'url_authorization' => 'http://oauth.vk.com/authorize?' . http_build_query($this->params_authorization),
-            'name'  =>  'Вася'
         ]);
     }
 
@@ -26,6 +27,44 @@ class User extends CI_controller
            
             if(!empty($this->input->get('code'))) {
 
+                $params_get_token = [
+
+                    'client_id'     => $this->params_authorization['client_id'],
+                    'client_secret' =>  'ogdBf66XvS1gBgK8oUb6',
+                    'redirect_uri'  => $this->params_authorization['redirect_uri'],
+                    'code'          => $this->input->get('code')
+
+                ];
+
+                @$vk = json_decode(file_get_contents('https://oauth.vk.com/access_token?' . http_build_query($params_get_token)));
+                
+                if($vk) {
+
+                    $params_user_get = [
+                        
+                        'user_ids'  => $vk->user_id,
+                        'fields'    => 'first_name,last_name,photo_50,photo_100'
+                    ];
+
+                   $user = json_decode(file_get_contents('https://api.vk.com/method/users.get?' . urldecode(http_build_query($params_user_get))));
+
+                   $params_user_get_friends = [
+
+                        'user_ids'      => $vk->user_id,
+                        'order'         => 'random',
+                        'fields'        => 'photo_50',
+                        'access_token'  => $vk->access_token
+                    ];
+
+                   $user_friends = json_decode(file_get_contents('https://api.vk.com/method/friends.get?' . urldecode(http_build_query($params_user_get_friends))));
+
+
+                } else {
+
+                    // Токен устарел
+                    show_error('Токен устарел!',400,'Ошибка токена');
+                }
+
             } else {
 
                 // Код не пришел
@@ -33,6 +72,7 @@ class User extends CI_controller
             }
             
         } else {
+
             // Уже авторизован
             redirect(base_url());
         }
