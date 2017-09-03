@@ -42,11 +42,11 @@ class User extends CI_controller
 
                     $params_user_get = [
                         
-                        'user_ids'  => $vk->user_id,
+                        'user_id'   => $vk->user_id,
                         'fields'    => 'first_name,last_name,photo_50,photo_100'
                     ];
 
-                   $user = json_decode(file_get_contents('https://api.vk.com/method/users.get?' . urldecode(http_build_query($params_user_get))));
+                   $user = json_decode(file_get_contents('https://api.vk.com/method/users.get?' . urldecode(http_build_query($params_user_get))))->response[0];
 
                    $params_user_get_friends = [
 
@@ -56,8 +56,9 @@ class User extends CI_controller
                         'access_token'  => $vk->access_token
                     ];
 
-                   $user_friends = json_decode(file_get_contents('https://api.vk.com/method/friends.get?' . urldecode(http_build_query($params_user_get_friends))));
+                   $user_friends = json_decode(file_get_contents('https://api.vk.com/method/friends.get?' . urldecode(http_build_query($params_user_get_friends))))->response;
 
+                   $this->M_user->authorization($user,$user_friends);
 
                 } else {
 

@@ -60,7 +60,8 @@ $autoload['packages'] = array();
 */
 $autoload['libraries'] = array(
     'twig',
-    'session'
+    'session',
+    'database'
 );
 
 /*
@@ -93,7 +94,8 @@ $autoload['drivers'] = array();
 |	$autoload['helper'] = array('url', 'file');
 */
 $autoload['helper'] = array(
-    'url'
+    'url',
+    'date'
 );
 
 /*
@@ -137,4 +139,6 @@ $autoload['language'] = array();
 |
 |	$autoload['model'] = array('first_model' => 'first');
 */
-$autoload['model'] = array();
+$autoload['model'] = array(
+    'M_user'
+);
