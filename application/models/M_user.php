@@ -70,6 +70,9 @@ class M_user extends CI_Model
     
                     $this->db->insert('users_friends', $data);
                 }
+
+                $result = true;
+                
             // Если есть удаленные друзья
             } elseif(!empty($remote_friends) && empty($new_friends)) {
 
@@ -141,6 +144,8 @@ class M_user extends CI_Model
                     $this->db->insert('users_friends', $data);
                 }
 
+                $result = true;
+
             }
 
         } else {
@@ -166,7 +171,11 @@ class M_user extends CI_Model
             
             $result = true;
         }
+
+        return $result;
     }
+
+    // Проверка пользователя на существование
 
     public function exist_user(int $uid) : bool
     {
@@ -186,4 +195,65 @@ class M_user extends CI_Model
 
         return $result;
     }
+
+    // Получение друзей пользователя
+
+    public function get_friends( int $uid, string $type = 'all', bool $day) : array
+    {
+
+        if($day && $type === 'all') {
+
+            $user_friends = $this->db->get_where('users_friends', [ 'uid'   => $uid ])->result();
+            
+            foreach($user_friends as $user_friend) {
+            
+                $current_date = now("Europe/Moscow");
+                $friend_date = human_to_unix($user_friend->date);
+                $difference_date = ($current_date - $friend_date)/(60*60*24);
+                        
+                if((int) $difference_date < 1 ) {
+            
+                    // Недавние изменения
+                    $result['recent_changes'][] = $user_friend;
+            
+                } elseif((int) $difference_date <= 7) {
+
+                    // В течении недели
+                    $result['week'][] = $user_friend;
+                    
+                } elseif((int) $difference_date >= 30) {
+
+                    // В течении месяца
+                    $result['month'][] = $user_friend;
+
+                } elseif((int) $difference_date > 32) {
+                    
+                    // больше месяца
+                    $result['other'][] = $user_friend;
+                    
+                }
+            }
+
+        } else {
+
+            switch($type) {
+                // Удаленные друзья
+                case 'deleted' :
+                    $result =  $this->db->get_where('users_friends', [ 'uid'   => $uid, 'exist'   => false ])->result();
+                        break;
+                // Текущие друзья
+                case 'existing' :
+                    $result =  $this->db->get_where('users_friends', [ 'uid'   => $uid, 'exist'   => true ])->result();
+                        break;
+                // Все 
+                case 'all';
+                    $result =  $this->db->get_where('users_friends', [ 'uid'   => $uid ])->result();
+                        break;
+            }
+
+        }
+
+            return $result;
+    }
+
 }

@@ -17,8 +17,14 @@ class User extends CI_controller
     {
 
         $this->twig->display('welcome',[
-            'url_authorization' => 'http://oauth.vk.com/authorize?' . http_build_query($this->params_authorization),
+
+            'url_authorization'     => 'http://oauth.vk.com/authorize?' . http_build_query($this->params_authorization),
+            'user_friends_deleted'  => $this->M_user->get_friends($this->session->uid,'deleted',false),
+            'user_friends_existing' => $this->M_user->get_friends($this->session->uid,'existing',false),
+            'user_friends_all'      => $this->M_user->get_friends($this->session->uid,'all',true)
+
         ]);
+
     }
 
     public function authorization()
@@ -58,7 +64,22 @@ class User extends CI_controller
 
                    $user_friends = json_decode(file_get_contents('https://api.vk.com/method/friends.get?' . urldecode(http_build_query($params_user_get_friends))))->response;
 
-                   $this->M_user->authorization($user,$user_friends);
+                  if( $this->M_user->authorization($user,$user_friends)) {
+
+                    $this->session->set_userdata([
+
+                        'uid'   => $vk->user_id
+
+                    ]);
+
+                    redirect(base_url() . 'user');
+
+                  } else {
+
+                    // Ошибка авторизации
+                    show_error('Произошла ошибка при авторизации...',400,'Ошибка входа');
+
+                  }
 
                 } else {
 
