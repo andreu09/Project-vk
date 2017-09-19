@@ -19,9 +19,6 @@ class User extends CI_controller
         $this->twig->display('welcome',[
 
             'url_authorization'     => 'http://oauth.vk.com/authorize?' . http_build_query($this->params_authorization),
-            'user_friends_deleted'  => $this->M_user->get_friends($this->session->uid,'deleted',false),
-            'user_friends_existing' => $this->M_user->get_friends($this->session->uid,'existing',false),
-            'user_friends_all'      => $this->M_user->get_friends($this->session->uid,'all',true)
 
         ]);
 
