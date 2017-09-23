@@ -13,18 +13,34 @@ class User extends CI_controller
         'v'             => 5.68
     ];
 
-    public function index()
+    public function index() : void
     {
 
-        $this->twig->display('welcome',[
+        if( isset($this->session->uid) ) {
 
-            'url_authorization'     => 'http://oauth.vk.com/authorize?' . http_build_query($this->params_authorization),
+            $this->twig->display('user/statistics',[
 
-        ]);
+                'users_exist_friends'          => $this->M_user->get_friends($this->session->uid,'existing',false),
+                'users_no_exist_friends'       => $this->M_user->get_friends($this->session->uid,'deleted',false),
+                'users_friends_day'            => $this->M_user->get_friends($this->session->uid,'all',true),
+                'user_info'                    => $this->M_user->user_get_info($this->session->uid),
+                'title'                       => 'Статистика'
+
+            ]);
+
+        } else {
+
+             $this->twig->display('user/authorization',[
+
+                'url_authorization'            => 'http://oauth.vk.com/authorize?' . http_build_query($this->params_authorization)
+
+            ]);
+
+        }
 
     }
 
-    public function authorization()
+    public function authorization() : void
     {
         if(!isset($this->session->uid)) {
            
@@ -69,7 +85,7 @@ class User extends CI_controller
 
                     ]);
 
-                    redirect(base_url() . 'user');
+                    redirect(base_url() . 'user/statistics');
 
                   } else {
 
@@ -96,4 +112,58 @@ class User extends CI_controller
             redirect(base_url());
         }
     }
+
+    public function statistics() : void
+    {
+
+        if( isset($this->session->uid) ) {
+
+            $this->twig->display('user/statistics',[
+
+                'users_exist_friends'          => $this->M_user->get_friends($this->session->uid,'existing',false),
+                'users_no_exist_friends'       => $this->M_user->get_friends($this->session->uid,'deleted',false),
+                'users_friends_day'            => $this->M_user->get_friends($this->session->uid,'all',true),
+                'user_info'                    => $this->M_user->user_get_info($this->session->uid),
+                'title'                        => 'Статистика'
+
+            ]);
+            
+        } else {
+
+            redirect(base_url());
+
+        }
+    }
+
+    public function out() : void 
+    {
+        if( isset($this->session->uid) ) {
+
+            $this->session->unset_userdata('uid');
+            redirect(base_url());
+
+        } else {
+
+            redirect(base_url());
+        }
+    }
+
+    public function faq() : void 
+    {
+        if( isset($this->session->uid) ) {
+
+            $this->twig->display('user/faq',[
+
+                'user_info' => $this->M_user->user_get_info($this->session->uid),
+                'title'    => 'Как это работает?'
+
+            ]);
+            
+        } else {
+
+            redirect(base_url());
+
+        }
+    }
+
 }

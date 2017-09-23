@@ -1,0 +1,65 @@
+{{ include('templates/header.twig') }}
+
+<link rel="stylesheet" href="/assets/css/user-statistics.css">
+<link rel="stylesheet" href="/assets/css/user-faq.css">
+
+<div class="container-fluid mt-5">
+    <h1 class="text-center">Часто задаваемые вопросы</h1>
+
+	<div class="panel-group" id="accordion1">
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h5 class="panel-title">
+            </h5>
+        </div>
+          
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h5 class="panel-title">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#accordion1_2">Во всех вкладках у меня нет статистики, пишет не обнаружено, что делать?</a>
+            </h5>
+        </div>
+
+        <div id="accordion1_2" class="panel-collapse collapse">
+            <div class="panel-body">
+              <p>Скорее всего вы только пришли на наш сервис и статистики еще нет. Она обновляется каждые 24 часа.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h5 class="panel-title">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#accordion1_3">Указано неверное время при добавлении или удалении друзей?</a>
+            </h5>
+        </div>
+
+        <div id="accordion1_3" class="panel-collapse collapse">
+            <div class="panel-body">
+              <p>Ваша статистика обновляется в двух случаях:</p>
+              <p>1) При входе на сайт</p>
+              <p>2) Каждый день в полночь</p>
+              <p>Время, которое указано в статистики это время вашего входа, либо 00:00. Стоит обращать внимаение на дату.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h5 class="panel-title">
+              <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion1" href="#accordion1_4">Изменения за неделю/месяц - что это?</a>
+            </h5>
+        </div>
+
+        <div id="accordion1_4" class="panel-collapse collapse">
+            <div class="panel-body">
+              <p>Это периоды, в них указываются друзья, у которых с момента добавления/удаления прошло более 7(неделя) и 30(месяц) дней.</p>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+</div>
+
+{{ include('templates/footer.twig') }}

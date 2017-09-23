@@ -1,0 +1,206 @@
+{{ include('templates/header.twig') }}
+<link rel="stylesheet" href="/assets/css/user-statistics.css">
+
+<div class="container-fluid mt-5">
+
+<h1>
+	<img src="{{ user_info.photo_50 }}" alt="..." class="rounded-circle mx-auto"> {{  user_info.first_name }} {{  user_info.last_name }}
+</h1>
+
+<p class="text-center"><a href="/user/out" class="btn btn-danger">Выйти</a></p>
+
+		<div class="tab_container">
+			<input id="tab1" type="radio" name="tabs" checked>
+			<label for="tab1"><i class="fa fa-clock-o" aria-hidden="true"></i><span>Недавнее</span></label>
+
+			<input id="tab2" type="radio" name="tabs">
+			<label for="tab2"><i class="fa fa-calendar-o" aria-hidden="true"></i></i><span>Неделя</span></label>
+
+			<input id="tab3" type="radio" name="tabs">
+			<label for="tab3"><i class="fa fa-history" aria-hidden="true"></i><span>Месяц</span></label>
+
+			<input id="tab4" type="radio" name="tabs">
+			<label for="tab4"><i class="fa fa-user-times" aria-hidden="true"></i><span>Удаленные</span></label>
+
+			<input id="tab5" type="radio" name="tabs">
+			<label for="tab5"><i class="fa fa-users" aria-hidden="true"></i><span>Текущие</span></label>
+
+			<section id="content1" class="tab-content">
+				<h3>Недавние изменения</h3>
+
+				{% if users_friends_day.recent_changes is null %}
+
+					<p class="text-center">Не обнаружено</p>
+
+				{% else %}
+
+						<table class="table">
+              				<thead class="thead-default">
+                				<tr>
+									<th>Друг</th>
+									<th>Тип действия</th>
+									<th>Дата</th>
+                				</tr>
+              				</thead>
+              				<tbody>
+                    			{% for user_friends_day_recent_changes in users_friends_day.recent_changes %}
+									<tr>
+											<th> <a target="_blank" href="https://vk.com/id{{ user_friends_day_recent_changes.uid_friend }}" class="text-dark" style = "text-decoration:none"> <img src="{{ user_friends_day_recent_changes.photo_50 }}" class="rounded-circle"> {{ user_friends_day_recent_changes.first_name }} {{ user_friends_day_recent_changes.last_name }} </a> </th>
+											<td>
+												{% if user_friends_day_recent_changes.exist %}
+													<p class="text-success">Добавление в друзья</p>
+												{% else %}
+													<p class="text-danger">Удаление из друзей</p>
+												{% endif %}
+											</td>
+											<td>{{ user_friends_day_recent_changes.date }}</td>
+									</tr>
+                    			{% endfor %}
+              				</tbody>
+            			</table>
+
+				{% endif %}
+		      	
+			</section>
+
+			<section id="content2" class="tab-content">
+				<h3>Изменения за неделю</h3>
+
+				{% if users_friends_day.week is null %}
+
+					<p class="text-center">Не обнаружено</p>
+
+				{% else %}
+		      	
+				<table class="table">
+					<thead class="thead-default">
+						<tr>
+							<th>Друг</th>
+							<th>Тип действия</th>
+							<th>Дата</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for user_friends_day_week in users_friends_day.week %}
+							<tr>
+								<th> <a target="_blank" href="https://vk.com/id{{ user_friends_day_week.uid_friend }}" class="text-dark" style = "text-decoration:none"> <img src="{{ user_friends_day_week.photo_50 }}" class="rounded-circle"> {{ user_friends_day_week.first_name }} {{ user_friends_day_week.last_name }} </a> </th>
+								<td>
+									{% if user_friends_day_week.exist %}
+										<p class="text-success">Добавление в друзья</p>
+									{% else %}
+										<p class="text-danger">Удаление из друзей</p>
+									{% endif %}
+								</td>
+								<td>{{ user_friends_day_week.date }}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+            	</table>
+
+				{% endif %}
+		      	
+			</section>
+
+			<section id="content3" class="tab-content">
+				<h3>Изменения за месяц </h3>
+
+				{% if users_friends_day.month is null %}
+
+					<p class="text-center">Не обнаружено</p>
+
+				{% else %}
+		      	
+					<table class="table">
+						<thead class="thead-default">
+							<tr>
+								<th>Друг</th>
+								<th>Тип действия</th>
+								<th>Дата</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for user_friends_day_month in users_friends_day.month %}
+								<tr>
+									<th> <a target="_blank" href="https://vk.com/id{{ user_friends_day_month.uid_friend }}" class="text-dark" style = "text-decoration:none"> <img src="{{ user_friends_day_month.photo_50 }}" class="rounded-circle"> {{ user_friends_day_month.first_name }} {{ user_friends_day_month.last_name }} </a> </th>
+									<td>
+										{% if user_friends_day_month.exist %}
+											<p class="text-success">Добавление в друзья</p>
+										{% else %}
+											<p class="text-danger">Удаление из друзей</p>
+										{% endif %}
+									</td>
+									<td>{{ user_friends_day_month.date }}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+
+				{% endif %}
+		      	
+			</section>
+
+			<section id="content4" class="tab-content">
+				<h3>Удаленные друзья</h3>
+
+				{% if users_no_exist_friends is null %}
+
+					<p class="text-center">Удаленных друзей не найдено</p>
+
+				{% else %}
+
+		      	<table class="table">
+					<thead class="thead-default">
+						<tr>
+						<th>Друг</th>
+						<th>Дата</th>
+						</tr>
+					</thead>
+					<tbody>
+							{% for user_no_exist_friends in users_no_exist_friends %}
+									<tr>
+											<th> <a target="_blank" href="https://vk.com/id{{ user_no_exist_friends.uid_friend }}" class="text-dark" style = "text-decoration:none"> <img src="{{ user_no_exist_friends.photo_50 }}" class="rounded-circle"> {{ user_no_exist_friends.first_name }} {{ user_no_exist_friends.last_name }} </a> </th>
+											<td>{{ user_no_exist_friends.date }}</td>
+									</tr>
+							{% endfor %}
+					</tbody>
+            	</table>
+
+				{% endif %}
+		      
+			</section>
+
+			<section id="content5" class="tab-content">
+				<h3>Текущие друзья</h3>
+
+				{% if users_exist_friends is null %}
+
+					<p class="text-center">Друзей не найдено</p>
+
+				{% else %}
+		      	
+				  <table class="table">
+					<thead class="thead-default">
+						<tr>
+						<th>Друг</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for user_exist_friends in users_exist_friends %}
+							<tr>
+								<th> <a target="_blank" href="https://vk.com/id{{ user_exist_friends.uid_friend }}" class="text-dark" style = "text-decoration:none"> <img src="{{ user_exist_friends.photo_50 }}" class="rounded-circle"> {{ user_exist_friends.first_name }} {{ user_exist_friends.last_name }} </a> </th>
+							</tr>
+						{% endfor %}
+					</tbody>
+            	</table>
+
+				{% endif %}
+		    
+			</section>
+
+		</div>
+
+</div>
+
+{{ include('templates/footer.twig') }}
+
+

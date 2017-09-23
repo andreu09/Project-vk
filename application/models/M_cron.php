@@ -73,7 +73,7 @@ class M_cron extends CI_Model
             // Те ксто есть в базе но нету уже в вк, удаленные друзья
             $remote_user_uids_friends[$user->uid] = @array_diff($db_users_friends_exist_uids[$user->uid],$vk_users_friends_uids[$user->uid]);
             // Новые друзья
-            $new_user_uids_friends[$user->uid] = @array_diff($vk_users_friends_uids[$user->uid],$db_users_friends_exist_uids[$user->uid]);
+            $new_user_uids_friends[$user->uid] = @array_diff($vk_users_friends_uids[$user->uid],$db_users_friends_exist_uids[$user->uid],$db_users_friends_no_exist_uids[$user->uid]);
             // Старые друзья, которые в базе отмечены как удаленные, но вк вернул их, значит они теперь снова актианые
             $old_user_uids_friends[$user->uid] =  @array_intersect($vk_users_friends_uids[$user->uid],$db_users_friends_no_exist_uids[$user->uid]);
 
@@ -96,7 +96,8 @@ class M_cron extends CI_Model
                 
                     $data = [
 
-                        'exist' => false
+                        'exist' => false,
+                        'date'  => unix_to_human(now("Europe/Moscow"),false,'euro')
 
                     ];
 
@@ -119,7 +120,8 @@ class M_cron extends CI_Model
                 
                     $data = [
 
-                        'exist' => true
+                        'exist' => true,
+                        'date' => unix_to_human(now("Europe/Moscow"),false,'euro')
 
                     ];
 

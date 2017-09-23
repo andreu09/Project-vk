@@ -166,10 +166,11 @@ class M_user extends CI_Model
                     'date'          => unix_to_human(now("Europe/Moscow"),false,'euro')
                 ];
 
-                $this->db->insert('users_friends', $data);
+                if($this->db->insert('users_friends', $data)) {
+                    $result = true;
+                }
             }
             
-            $result = true;
         }
 
         return $result;
@@ -214,46 +215,72 @@ class M_user extends CI_Model
                 if((int) $difference_date < 1 ) {
             
                     // Недавние изменения
-                    $result['recent_changes'][] = $user_friend;
+                     $result['recent_changes'][] = (array) $user_friend;
             
                 } elseif((int) $difference_date <= 7) {
 
                     // В течении недели
-                    $result['week'][] = $user_friend;
+                    $result['week'][] = (array) $user_friend;
                     
                 } elseif((int) $difference_date >= 30) {
 
                     // В течении месяца
-                    $result['month'][] = $user_friend;
+                    $result['month'][] = (array) $user_friend;
 
                 } elseif((int) $difference_date > 32) {
                     
                     // больше месяца
-                    $result['other'][] = $user_friend;
+                    $result['other'][] = (array) $user_friend;
                     
                 }
             }
+
+            function mysort($a, $b) {
+                return strtotime($b['date']) - strtotime($a['date']);
+            }
+            
+            @usort($result['recent_changes'], 'mysort');
+            @usort($result['week'], 'mysort');
+            @usort($result['month'], 'mysort');
+            @usort($result['other'], 'mysort');
+            
 
         } else {
 
             switch($type) {
                 // Удаленные друзья
                 case 'deleted' :
-                    $result =  $this->db->get_where('users_friends', [ 'uid'   => $uid, 'exist'   => false ])->result();
+                    $result =  $this->db->get_where('users_friends', [ 'uid'   => $uid, 'exist'   => false ])->result_array();
                         break;
                 // Текущие друзья
                 case 'existing' :
-                    $result =  $this->db->get_where('users_friends', [ 'uid'   => $uid, 'exist'   => true ])->result();
+                    $result =  $this->db->get_where('users_friends', [ 'uid'   => $uid, 'exist'   => true ])->result_array();
                         break;
                 // Все 
                 case 'all';
-                    $result =  $this->db->get_where('users_friends', [ 'uid'   => $uid ])->result();
+                    $result = $this->db->get_where('users_friends', [ 'uid'   => $uid ])->result_array();
                         break;
+
             }
+
+            usort($result, function ($a, $b) {
+                return strtotime($a['date']) -  strtotime($b['date']);
+            });
 
         }
 
             return $result;
+    }
+
+    public function user_get_info(int $uid) 
+    {
+        $user_info = $this->db->get_where('users',[
+
+            'uid'   => $uid
+
+        ])->row();
+
+        return $user_info;
     }
 
 }
