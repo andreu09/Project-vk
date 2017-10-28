@@ -2,15 +2,14 @@
 
 class User extends CI_controller
 {
-
     private $params_authorization = [
 
         'client_id'     => 6161889,
         'redirect_uri'  => 'http://project-vk.ru/User/authorization',
         'display'       => 'popup',
-        'scope'         => 'friends',
+        'scope'         => 'friends,offline,video',
         'response_type' => 'code',
-        'v'             => 5.68
+        'v'             => 5.68,
     ];
 
     public function index() : void
@@ -20,11 +19,11 @@ class User extends CI_controller
 
             $this->twig->display('user/statistics',[
 
-                'users_exist_friends'          => $this->M_user->get_friends($this->session->uid,'existing',false),
-                'users_no_exist_friends'       => $this->M_user->get_friends($this->session->uid,'deleted',false),
-                'users_friends_day'            => $this->M_user->get_friends($this->session->uid,'all',true),
-                'user_info'                    => $this->M_user->user_get_info($this->session->uid),
-                'title'                       => 'Статистика'
+                'title'                  => 'Статистика',
+                'user'                   => $this->M_user->get($this->session->uid),
+                'user_photos'            => $this->M_vk_api->get_photos($this->session->uid),
+                'user_videos'            => $this->M_vk_api->get_videos($this->session->uid),
+                'user_friends'           => $this->M_vk_api->get_friends($this->session->uid),   
 
             ]);
 
@@ -32,7 +31,8 @@ class User extends CI_controller
 
              $this->twig->display('user/authorization',[
 
-                'url_authorization'            => 'http://oauth.vk.com/authorize?' . http_build_query($this->params_authorization)
+                'url_authorization' => 'http://oauth.vk.com/authorize?' . urldecode(http_build_query($this->params_authorization)),
+                'title'             => 'Подтверждение входа'
 
             ]);
 
@@ -56,6 +56,8 @@ class User extends CI_controller
                 ];
 
                 @$vk = json_decode(file_get_contents('https://oauth.vk.com/access_token?' . http_build_query($params_get_token)));
+
+                $this->M_user->add_token($vk->access_token,$vk->user_id);
                 
                 if($vk) {
 
@@ -85,7 +87,7 @@ class User extends CI_controller
 
                     ]);
 
-                    redirect(base_url() . 'user/statistics');
+                    redirect(base_url());
 
                   } else {
 
@@ -113,28 +115,6 @@ class User extends CI_controller
         }
     }
 
-    public function statistics() : void
-    {
-
-        if( isset($this->session->uid) ) {
-
-            $this->twig->display('user/statistics',[
-
-                'users_exist_friends'          => $this->M_user->get_friends($this->session->uid,'existing',false),
-                'users_no_exist_friends'       => $this->M_user->get_friends($this->session->uid,'deleted',false),
-                'users_friends_day'            => $this->M_user->get_friends($this->session->uid,'all',true),
-                'user_info'                    => $this->M_user->user_get_info($this->session->uid),
-                'title'                        => 'Статистика'
-
-            ]);
-            
-        } else {
-
-            redirect(base_url());
-
-        }
-    }
-
     public function out() : void 
     {
         if( isset($this->session->uid) ) {
@@ -155,7 +135,7 @@ class User extends CI_controller
             $this->twig->display('user/faq',[
 
                 'user_info' => $this->M_user->user_get_info($this->session->uid),
-                'title'    => 'Как это работает?'
+                'title'    => 'Часто задаваемые вопросы'
 
             ]);
             
